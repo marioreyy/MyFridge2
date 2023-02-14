@@ -53,11 +53,8 @@ class Index : AppCompatActivity() {
         prefs.putString("provider", provider)
         prefs.apply()
         drawerLayout()
-        loadPictures()
         setup()
-        populate { products ->
-            initRecyclerView(products)
-        }
+        initRecyclerView()
 
     }
 
@@ -83,17 +80,13 @@ class Index : AppCompatActivity() {
             }
     }
 
-
-
-    private fun initRecyclerView(products: MutableList<Product>) {
+    private fun initRecyclerView() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerProducts)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val adapter = ProductAdapter(products)
-        recyclerView.adapter = adapter
-
-        Log.d("Adapter", adapter.toString())
+        recyclerView.layoutManager = GridLayoutManager(this,3)
+        populate { productos ->
+            recyclerView.adapter = ProductAdapter(productos)
+        }
     }
 
 
@@ -134,7 +127,7 @@ class Index : AppCompatActivity() {
 
 
     private fun setup(){
-
+/**
 
         imageView3.setOnClickListener{
             showDetails(imageView3.id.toString())
@@ -145,7 +138,7 @@ class Index : AppCompatActivity() {
         imageView5.setOnClickListener{
             showDetails(imageView5.id.toString())
         }
-
+**/
         logOutButtonIndex.setOnClickListener {
             // Borrado de datos
             val prefs: SharedPreferences.Editor = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
@@ -170,36 +163,13 @@ class Index : AppCompatActivity() {
     }
 
 
-    private fun loadPictures(){
-
-        val imageview: ImageView = findViewById(R.id.imageView+2)
-        val imageview2: ImageView = findViewById(R.id.imageView4)
-        val imageview3: ImageView = findViewById(R.id.imageView5)
-
-
-
-
-        var arrays = arrayOf(arrayOf(imageview,textView8), arrayOf(imageview2,textView5),
-            arrayOf(imageview3,textView6))
-        for(array in arrays){
-
-
-            db.collection("products").document(array[0].id.toString()).get().addOnSuccessListener {
-                if(it.exists())    {
-                    Glide.with(applicationContext).load(it.get("url")).into(array[0] as ImageView)
-                    var text = array[1] as TextView
-                    text.text = it.get("name") as String?
-                }
-
-
-            }
-        }
 
 
 
 
 
-    }
+
+
 
 
 }

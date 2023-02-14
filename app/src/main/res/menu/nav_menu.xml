@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/nav_shopping"
+        android:icon="@drawable/baseline_shopping_cart_24"
+        android:title="Lista de Compra"/>
+    <item
+        android:id="@+id/nav_stats"
+        android:icon="@drawable/baseline_query_stats_24"
+        android:title="Estadísticas"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="Ajustes"/>
+
+
+    <item
+        android:title="Perfil">
+
+        <menu>
+
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/baseline_login_24"
+                android:title="Iniciar sesión"/>
+
+
+        </menu>
+
+
+
+
+    </item>
+
+
+
+
+
+</menu>

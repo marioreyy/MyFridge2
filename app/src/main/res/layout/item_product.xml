@@ -9,6 +9,9 @@
         android:id="@+id/ivProduct"
         android:layout_width="111dp"
         android:layout_height="126dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -17,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="25dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif-black"
@@ -26,5 +29,7 @@
         app:layout_constraintEnd_toEndOf="@+id/ivProduct"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivProduct" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.example.myfridge.adapter
 
+import android.content.DialogInterface.OnClickListener
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,7 +8,7 @@ import com.example.myfridge.ProductProvider.Companion.products
 import com.example.myfridge.R
 import com.example.myfridge.model.Product
 
-class ProductAdapter(private val productsList:List<Product>): RecyclerView.Adapter<ProductViewHolder>() {
+class ProductAdapter(private val productsList:List<Product>, private val onClickListener:(Product) -> Unit): RecyclerView.Adapter<ProductViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
 
@@ -18,7 +19,7 @@ class ProductAdapter(private val productsList:List<Product>): RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val item = productsList[position]
-        holder.render(item)
+        holder.render(item, onClickListener)
     }
 
     override fun getItemCount(): Int = products.size

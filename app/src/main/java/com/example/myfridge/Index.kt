@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myfridge.adapter.ProductAdapter
+import com.example.myfridge.databinding.ActivityIndexBinding
 import com.example.myfridge.model.Product
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class Index : AppCompatActivity() {
 
+    private lateinit var binding: ActivityIndexBinding
+
 
     private val db = FirebaseFirestore.getInstance()
     lateinit var toggle: ActionBarDrawerToggle
@@ -37,7 +40,8 @@ class Index : AppCompatActivity() {
 
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_index)
+        binding = ActivityIndexBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
 
@@ -82,11 +86,19 @@ class Index : AppCompatActivity() {
 
     private fun initRecyclerView() {
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerProducts)
-        recyclerView.layoutManager = GridLayoutManager(this,3)
+
+        binding.recyclerProducts.layoutManager = GridLayoutManager(this,3)
         populate { productos ->
-            recyclerView.adapter = ProductAdapter(productos)
+            binding.recyclerProducts.adapter = ProductAdapter(productos) { product ->
+                onItemSelected(
+                    product
+                )
+            }
         }
+    }
+
+    fun onItemSelected(product: Product){
+        Toast.makeText(this, product.productName, Toast.LENGTH_SHORT).show()
     }
 
 

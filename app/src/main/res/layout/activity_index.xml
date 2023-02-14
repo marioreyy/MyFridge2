@@ -128,6 +128,13 @@
                 android:layout_height="100dp" />
         </TableLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerProducts"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            
+        </androidx.recyclerview.widget.RecyclerView>
+
         <Button
             android:id="@+id/logOutButtonIndex"
             android:layout_width="match_parent"

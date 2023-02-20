@@ -7,26 +7,18 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.myfridge.adapter.ProductAdapter
 import com.example.myfridge.databinding.ActivityIndexBinding
 import com.example.myfridge.model.Product
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_index.*
-
-
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_index.*
 
 
 class Index : AppCompatActivity() {
@@ -36,13 +28,14 @@ class Index : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
     lateinit var toggle: ActionBarDrawerToggle
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         super.onCreate(savedInstanceState)
+
         binding = ActivityIndexBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
 
         // Obtener datos de la sesión
@@ -52,7 +45,8 @@ class Index : AppCompatActivity() {
 
         // Guardado de datos
 
-        val prefs: SharedPreferences.Editor = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
+        val prefs: SharedPreferences.Editor =
+            getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
         prefs.putString("email", email)
         prefs.putString("provider", provider)
         prefs.apply()
@@ -62,6 +56,7 @@ class Index : AppCompatActivity() {
 
     }
 
+    //Clase para popular el RecyclerView
     public fun populate(callback: (MutableList<Product>) -> Unit) {
 
         val db = FirebaseFirestore.getInstance()
@@ -72,7 +67,8 @@ class Index : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 for (document in result) {
                     products.add(
-                        Product(document.get("name") as String,
+                        Product(
+                            document.get("name") as String,
                             document.get("url") as String
                         )
                     )
@@ -87,29 +83,31 @@ class Index : AppCompatActivity() {
     private fun initRecyclerView() {
 
 
-        binding.recyclerProducts.layoutManager = GridLayoutManager(this,3)
+        binding.recyclerProducts.layoutManager = GridLayoutManager(this, 3)
         populate { productos ->
-            binding.recyclerProducts.adapter = ProductAdapter(productos) { product ->
-                onItemSelected(
-                    product
-                )
-            }
+            binding.recyclerProducts.adapter = ProductAdapter(productsList = productos,
+                onClickListener = { product ->
+                    onItemSelected(
+                        product
+                    )
+                }, onClickDelete = { position -> onDeletedItem(position) })
         }
     }
 
-    fun onItemSelected(product: Product){
+    private fun onDeletedItem(position: Int) {
+        db.collection("products").document(position.toString()).delete()
+    }
+
+    private fun onItemSelected(product: Product) {
         Toast.makeText(this, product.productName, Toast.LENGTH_SHORT).show()
     }
 
 
+    private fun drawerLayout() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
 
-
-
-    private fun drawerLayout(){
-        val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
-        val navView : NavigationView = findViewById(R.id.nav_view)
-
-        toggle = ActionBarDrawerToggle(this, drawerLayout,R.string.open,R.string.close)
+        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -117,12 +115,32 @@ class Index : AppCompatActivity() {
 
         navView.setNavigationItemSelectedListener {
 
-            when(it.itemId){
-                R.id.nav_home -> Toast.makeText(applicationContext,"Clicked Home",Toast.LENGTH_SHORT).show()
-                R.id.nav_stats -> Toast.makeText(applicationContext,"Clicked Stats",Toast.LENGTH_SHORT).show()
-                R.id.nav_login -> Toast.makeText(applicationContext,"Clicked Login",Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> Toast.makeText(applicationContext,"Clicked Settings",Toast.LENGTH_SHORT).show()
-                R.id.nav_shopping -> Toast.makeText(applicationContext,"Clicked Shopping List",Toast.LENGTH_SHORT).show()
+            when (it.itemId) {
+                R.id.nav_home -> Toast.makeText(
+                    applicationContext,
+                    "Clicked Home",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_stats -> Toast.makeText(
+                    applicationContext,
+                    "Clicked Stats",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_login -> Toast.makeText(
+                    applicationContext,
+                    "Clicked Login",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_settings -> Toast.makeText(
+                    applicationContext,
+                    "Clicked Settings",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_shopping -> Toast.makeText(
+                    applicationContext,
+                    "Clicked Shopping List",
+                    Toast.LENGTH_SHORT
+                ).show()
 
             }
             true
@@ -131,29 +149,30 @@ class Index : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        if(toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true
         }
         return super.onOptionsItemSelected(item)
     }
 
 
-    private fun setup(){
-/**
+    private fun setup() {
+        /**
 
         imageView3.setOnClickListener{
-            showDetails(imageView3.id.toString())
+        showDetails(imageView3.id.toString())
         }
         imageView4.setOnClickListener{
-            showDetails(imageView4.id.toString())
+        showDetails(imageView4.id.toString())
         }
         imageView5.setOnClickListener{
-            showDetails(imageView5.id.toString())
+        showDetails(imageView5.id.toString())
         }
-**/
+         **/
         logOutButtonIndex.setOnClickListener {
             // Borrado de datos
-            val prefs: SharedPreferences.Editor = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
+            val prefs: SharedPreferences.Editor =
+                getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
             prefs.clear()
             prefs.apply()
 
@@ -162,26 +181,20 @@ class Index : AppCompatActivity() {
 
         }
 
-
-
-    }
-
-    private fun showDetails(id:String) {
-        val intent = Intent(this, ImageDetails::class.java).apply{
-            putExtra("imageId",id)
+        addProduct.setOnClickListener{
+            addPicture()
+            recreate()
         }
 
-        startActivity(intent)
+
+
     }
 
+    private fun addPicture() {
 
-
-
-
-
-
-
-
+        val intent = Intent(this, AddProduct::class.java)
+        startActivity(intent)
+    }
 
 
 }

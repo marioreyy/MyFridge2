@@ -36,6 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="70dp"
                 android:clickable="true"
+                android:outlineProvider="none"
                 android:contentDescription="Add a Product"
                 app:backgroundTint="#FFFFFF"
                 app:srcCompat="@mipmap/add" />

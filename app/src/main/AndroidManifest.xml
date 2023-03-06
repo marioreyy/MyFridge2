@@ -18,7 +18,7 @@
             android:name=".NavigationDrawer"
             android:exported="false" />
         <activity
-            android:name=".ImageDetails"
+            android:name=".ProductDetails"
             android:exported="false" />
         <activity
             android:name=".Index"

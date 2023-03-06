@@ -8,8 +8,8 @@ import com.example.myfridge.R
 import com.example.myfridge.model.Product
 
 class ProductAdapter(private val productsList:List<Product>,
-                     private val onClickListener:(Product) -> Unit,
-                    private val onClickDelete:(Int) -> Unit
+                     private val onClickListener: ((Product) -> Unit)?,
+                     private val onClickDelete: ((Int) -> Unit)?
 ): RecyclerView.Adapter<ProductViewHolder>() {
 
 
@@ -23,11 +23,19 @@ class ProductAdapter(private val productsList:List<Product>,
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+
+
         val item = productsList[position]
-        holder.render(item, onClickListener, onClickDelete)
+        if (onClickListener != null) {
+            if (onClickDelete != null) {
+                holder.render(item, onClickListener, onClickDelete)
+            }
+        }
+
+
     }
 
-    override fun getItemCount(): Int = products.size
+    override fun getItemCount(): Int = productsList.size
 
 
 }

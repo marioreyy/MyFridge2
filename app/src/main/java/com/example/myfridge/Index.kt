@@ -12,6 +12,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myfridge.adapter.ProductAdapter
 import com.example.myfridge.databinding.ActivityIndexBinding
 import com.example.myfridge.model.Product
@@ -29,7 +30,10 @@ class Index : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     lateinit var toggle: ActionBarDrawerToggle
 
-
+    override fun onResume() {
+        super.onResume()
+        initRecyclerView()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -68,6 +72,7 @@ class Index : AppCompatActivity() {
                 for (document in result) {
                     products.add(
                         Product(
+                            document.id as String,
                             document.get("name") as String,
                             document.get("url") as String
                         )
@@ -82,24 +87,41 @@ class Index : AppCompatActivity() {
 
     private fun initRecyclerView() {
 
-
+        binding.recyclerProducts.adapter = ProductAdapter(ArrayList<Product>(), null, null)
         binding.recyclerProducts.layoutManager = GridLayoutManager(this, 3)
         populate { productos ->
-            binding.recyclerProducts.adapter = ProductAdapter(productsList = productos,
+            binding.recyclerProducts.adapter = ProductAdapter(
+                productsList = productos,
                 onClickListener = { product ->
                     onItemSelected(
                         product
                     )
-                }, onClickDelete = { position -> onDeletedItem(position) })
+                }) { position ->
+                onDeletedItem(
+                    position,
+                    binding.recyclerProducts.adapter, productos
+                )
+            }
         }
     }
 
-    private fun onDeletedItem(position: Int) {
-        db.collection("products").document(position.toString()).delete()
+    private fun onDeletedItem(
+        position: Int,
+        adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?,
+        productos: MutableList<Product>
+    ) {
+
+        val id = productos[position].Id
+        db.collection("products").document(id).delete()
+
+        adapter?.notifyDataSetChanged()
+        initRecyclerView()
+
     }
 
     private fun onItemSelected(product: Product) {
         Toast.makeText(this, product.productName, Toast.LENGTH_SHORT).show()
+        showDetails(product.Id.toString())
     }
 
 
@@ -177,13 +199,14 @@ class Index : AppCompatActivity() {
             prefs.apply()
 
             FirebaseAuth.getInstance().signOut()
-            onBackPressed()
+            finish()
 
         }
 
         addProduct.setOnClickListener{
             addPicture()
             recreate()
+
         }
 
 
@@ -194,6 +217,16 @@ class Index : AppCompatActivity() {
 
         val intent = Intent(this, AddProduct::class.java)
         startActivity(intent)
+        initRecyclerView()
+    }
+
+    private fun showDetails(productId: String) {
+
+        val intent = Intent(this, ProductDetails::class.java).apply {
+            putExtra("productId", productId)
+        }
+        startActivity(intent)
+        initRecyclerView()
     }
 
 

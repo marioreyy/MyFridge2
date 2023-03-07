@@ -1,5 +1,6 @@
 package com.example.myfridge.adapter
 
+import android.net.Uri
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,7 +21,10 @@ class ProductViewHolder(view: View): RecyclerView.ViewHolder(view) {
     ) {
         binding.tvProductName.text = productModel.productName
         binding.btnDelete.setOnClickListener{onClickDelete(adapterPosition)}
-        Glide.with(binding.ivProduct.context).load(productModel.image).into(binding.ivProduct)
+
+                Glide.with(binding.ivProduct.context).load(productModel.image).into(binding.ivProduct)
+
+
         itemView.setOnClickListener{
             onClickListener(productModel)
         }

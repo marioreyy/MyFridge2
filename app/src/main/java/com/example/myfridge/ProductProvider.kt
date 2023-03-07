@@ -22,7 +22,8 @@ class ProductProvider {
                     for (document in result) {
                         if(document.get("userId") == mAuth.currentUser?.email){
                             products.add(
-                                Product(document.id as String,
+                                Product(
+                                    document.id as String,
                                     document.get("name") as String,
                                     document.get("url") as String
                                 )

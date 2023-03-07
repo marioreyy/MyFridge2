@@ -31,7 +31,8 @@ class ProductDetails : AppCompatActivity() {
         saveButton.setOnClickListener{
             if(productId.isNotEmpty()){
                 db.collection("products").document(productId).set(
-                    hashMapOf("name" to productNameEditText.text.toString(),
+                    hashMapOf(
+                        "name" to productNameEditText.text.toString(),
                         "price" to productPriceEditText.text.toString(),
                         "url" to urlEditText.text.toString())
                 )

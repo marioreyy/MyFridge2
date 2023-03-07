@@ -3,6 +3,7 @@ package com.example.myfridge
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -46,7 +47,8 @@ class AddProduct : AppCompatActivity() {
         }
         builder.show()
     }
-    private var selectedBitmap: Bitmap? = null // variable para almacenar el bitmap seleccionado
+    private var selectedBitmap: Bitmap? = null
+    private var selectedImage: Uri? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -62,10 +64,10 @@ class AddProduct : AppCompatActivity() {
 
                 }
                 2 -> { // Si la imagen es de la galería
-                    val selectedImage = data?.data
+                    selectedImage = data?.data
                     imageView2.setImageURI(selectedImage)
                     urlEditText.visibility = View.INVISIBLE
-                    urlEditText.setText("")
+                    urlEditText.setText("a")
                 }
             }
         }
@@ -120,8 +122,11 @@ class AddProduct : AppCompatActivity() {
                             "userId" to mAuth.currentUser?.email.toString()
                         )
                     )
+                    if(selectedBitmap != null){
+                        uploadBitmapToFirestore(productId)
+                    }
+                    selectedImage?.let { saveImageToFirebaseStorage(productId, it) }
 
-                    uploadBitmapToFirestore(productId)
                     finish()
                 }
             } else {
@@ -161,6 +166,31 @@ class AddProduct : AppCompatActivity() {
 
                 exception.printStackTrace()
             }
+        }
+    }
+    private fun saveImageToFirebaseStorage(productId: Int?,selectedImageUri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imagesRef = storageRef.child("images/${UUID.randomUUID()}")
+        val uploadTask = imagesRef.putFile(selectedImageUri)
+
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imagesRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                val downloadUriString = downloadUri.toString()
+                val productRef = FirebaseFirestore.getInstance().collection("products")
+                    .document(productId.toString())
+                productRef.update("url", downloadUriString).addOnSuccessListener {
+
+                }
+            }
+
         }
     }
 

@@ -1,14 +1,18 @@
 package com.example.myfridge
 
 
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
@@ -19,7 +23,10 @@ import com.example.myfridge.model.Product
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.android.synthetic.main.activity_index.*
+
 
 
 class Index : AppCompatActivity() {
@@ -122,6 +129,7 @@ class Index : AppCompatActivity() {
     private fun onItemSelected(product: Product) {
         Toast.makeText(this, product.productName, Toast.LENGTH_SHORT).show()
         showDetails(product.Id.toString())
+
     }
 
 
@@ -148,11 +156,7 @@ class Index : AppCompatActivity() {
                     "Clicked Stats",
                     Toast.LENGTH_SHORT
                 ).show()
-                R.id.nav_login -> Toast.makeText(
-                    applicationContext,
-                    "Clicked Login",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.nav_logOut -> logOut()
                 R.id.nav_settings -> Toast.makeText(
                     applicationContext,
                     "Clicked Settings",
@@ -167,7 +171,19 @@ class Index : AppCompatActivity() {
             }
             true
         }
+
     }
+
+    private fun logOut() {
+        val prefs: SharedPreferences.Editor =
+            getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
+        prefs.clear()
+        prefs.apply()
+
+        FirebaseAuth.getInstance().signOut()
+        finish()
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
@@ -191,17 +207,11 @@ class Index : AppCompatActivity() {
         showDetails(imageView5.id.toString())
         }
          **/
-        logOutButtonIndex.setOnClickListener {
-            // Borrado de datos
-            val prefs: SharedPreferences.Editor =
-                getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
-            prefs.clear()
-            prefs.apply()
-
-            FirebaseAuth.getInstance().signOut()
-            finish()
-
+        camScannerButton.setOnClickListener {
+            scanCode()
         }
+
+
 
         addProduct.setOnClickListener{
             addPicture()
@@ -211,6 +221,23 @@ class Index : AppCompatActivity() {
 
 
 
+    }
+
+    private fun scanCode() {
+        val options = ScanOptions()
+        options.setBeepEnabled(true)
+        options.setOrientationLocked(true)
+        options.captureActivity = BarCodeScanner::class.java
+        barLauncher.launch(options)
+    }
+
+    private val barLauncher: ActivityResultLauncher<ScanOptions> = registerForActivityResult(ScanContract()) { result ->
+        println("CODIGO DE BARRAS: " + result.contents)
+        if (result.contents != null) {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("Result")
+            builder.setMessage(result.contents)
+        }
     }
 
     private fun addPicture() {

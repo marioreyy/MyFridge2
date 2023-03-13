@@ -28,9 +28,9 @@
         <menu>
 
             <item
-                android:id="@+id/nav_login"
+                android:id="@+id/nav_logOut"
                 android:icon="@drawable/baseline_login_24"
-                android:title="Iniciar sesión"/>
+                android:title="Cerrar sesión"/>
 
 
         </menu>
